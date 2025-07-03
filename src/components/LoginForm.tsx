@@ -1,5 +1,5 @@
 import { useState } from "react";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 
 export default function LoginForm() {
   const [form, setForm] = useState({
@@ -19,23 +19,50 @@ export default function LoginForm() {
     try {
       const response = await axios.post("http://localhost:3001/login", form);
       alert(response.data.message);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (err: any) {
-      alert(err.response?.data?.error || "Erro desconhecido");
+    } catch (err) {
+      const error = err as AxiosError;
+
+      if (error.response) {
+        console.error("Erro no login:", error.response.data);
+        alert(error.response.data || "Erro desconhecido");
+      } else {
+        alert("Erro de rede ou inesperado");
+      }
     }
   };
 
   return (
     <form onSubmit={handleSubmit}>
-      <input name="name" placeholder="Nome" onChange={handleChange} />
-      <input name="password" placeholder="Senha" onChange={handleChange} />
+      <input
+        name="name"
+        placeholder="Nome"
+        value={form.name}
+        onChange={handleChange}
+      />
+      <input
+        name="password"
+        placeholder="Senha"
+        value={form.password}
+        onChange={handleChange}
+      />
       <input
         name="date"
         placeholder="Data (YYYY-MM-DD)"
+        value={form.date}
         onChange={handleChange}
       />
-      <input name="time" placeholder="Hora (HH:MM)" onChange={handleChange} />
-      <input name="code" placeholder="Código" onChange={handleChange} />
+      <input
+        name="time"
+        placeholder="Hora (HH:MM)"
+        value={form.time}
+        onChange={handleChange}
+      />
+      <input
+        name="code"
+        placeholder="Código"
+        value={form.code}
+        onChange={handleChange}
+      />
       <button type="submit">Entrar</button>
     </form>
   );
